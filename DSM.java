@@ -1,16 +1,22 @@
 import java.util.*;
 
 public class DSM implements Runnable {
-    LocalMemory mem = new LocalMemory();
-    BroadcastAgent agent = new BroadcastAgent();
+    public LocalMemory localMem;
+    public BroadcastAgent agent;
+    
+    DSM(BroadcastSystem bs, int id){
+		localMem = new LocalMemory();
+		bs.agentArray[id] = new BroadcastAgent(localMem, bs, id);
+        agent = bs.agentArray[id];
+	}
 
-    public int load(int index){
-        return mem.load(index);
+    public int load(int arrayNum, int index){
+        return localMem.load(arrayNum, index);
     }
-    public void store(int index, int value) {
-        mem.store(index, value);
-        agent.broadcast("Updating value of array index %d with value %d", index, value);
+    
+    public void store(int arrayNum, int index, int value) {
+        agent.broadcast(arrayNum, index, value);
     }
 
-    public void run() {}
+    public void run() {/*not being used*/}
 }

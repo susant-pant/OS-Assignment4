@@ -2,12 +2,14 @@ import java.util.*;
 
 public class DSM implements Runnable {
     public LocalMemory localMem;
-    public BroadcastAgent agent;
+    public BroadcastAgent broadcastAgent;
+    public TokenRingAgent tokenRingAgent;
     
-    DSM(BroadcastSystem bs, int id){
+    DSM(BroadcastSystem bs, TokenRingAgent tra, int id){
 		localMem = new LocalMemory();
 		bs.agentArray[id] = new BroadcastAgent(localMem, bs, id);
-        agent = bs.agentArray[id];
+        broadcastAgent = bs.agentArray[id];
+        tokenRingAgent = tra;
 	}
 
     public int load(int arrayNum, int index){
@@ -15,7 +17,10 @@ public class DSM implements Runnable {
     }
     
     public void store(int arrayNum, int index, int value) {
-        agent.broadcast(arrayNum, index, value);
+        while (!tokenRingAgent.hasToken0) {
+            try{Thread.sleep(100);}catch(Exception e){}
+        }
+        broadcastAgent.broadcast(arrayNum, index, value);
     }
 
     public void run() {/*not being used*/}

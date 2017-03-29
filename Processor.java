@@ -3,9 +3,11 @@ import java.util.*;
 public class Processor implements Runnable {
     public DSM dsm;
     public int processID;
+    public TokenRingAgent tokenRingAgent;
     
-	Processor (BroadcastSystem bs, int id){
-		dsm = new DSM(bs, id);
+	Processor (BroadcastSystem bs, TokenRing tr, int id){
+		tokenRingAgent = new TokenRingAgent(processID, tr);
+		dsm = new DSM(bs, tokenRingAgent, id);
 		processID = id;
 	}
 
@@ -35,6 +37,7 @@ public class Processor implements Runnable {
             System.out.printf("Process %d: Still in critical section\n", processID);
         }
 		dsm.store(0, processID, -1);
+		tokenRingAgent.passToken();
         System.out.printf("Process %d: Exiting critical section\n", processID);
 	}
 }
